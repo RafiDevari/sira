@@ -16,5 +16,8 @@ class ApplicationSeeder extends Seeder
     {
         Application::create(['name' => 'App Alpha']);
         Application::create(['name' => 'App Beta']);
+        Application::create(['name' => 'App Gamma']);
+        
+
     }
 }

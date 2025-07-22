@@ -15,5 +15,8 @@ class UserSeeder extends Seeder
     {
         User::create(['name' => 'Alice']);
         User::create(['name' => 'Bob']);
+        User::create(['name' => 'Charlie']);
+        User::create(['name' => 'Diana']);
+        User::create(['name' => 'Ethan']);
     }
 }

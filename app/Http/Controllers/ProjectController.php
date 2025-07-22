@@ -11,19 +11,49 @@ class ProjectController extends Controller
 {
     public function index(Request $request)
     {
+        // Handle search and filter
         $search = $request->input('search');
+        $type = $request->input('type');
 
         $projects = Project::with('lead')
-            ->when($search, fn($q) => $q->where('nama', 'like', "%$search%"))
-            ->get();
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($query) use ($search) {
+                    $query->where('nama', 'like', "%$search%")
+                        ->orWhere('key', 'like', "%$search%");
+                });
+            })
+            ->when($type, fn($q) => $q->where('tipe', $type))
+                ->get();
+
+        // Handle sorting
+        $sort = $request->input('sort');
+        $allTypes = Project::select('tipe')->distinct()->pluck('tipe');
+
+        if ($sort) {
+            [$key, $direction] = explode(':', $sort);
+            $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'asc';
+
+            $projects = match ($key) {
+                'name'      => $direction === 'asc' ? $projects->sortBy('nama') : $projects->sortByDesc('nama'),
+                'key'       => $direction === 'asc' ? $projects->sortBy('key') : $projects->sortByDesc('key'),
+                'type'      => $direction === 'asc' ? $projects->sortBy('tipe') : $projects->sortByDesc('tipe'),
+                'lead'      => $direction === 'asc' ? $projects->sortBy(fn($p) => $p->lead->name ?? '') : $projects->sortByDesc(fn($p) => $p->lead->name ?? ''),
+                'created_at', 'deadline', 'waktu_selesai' => $direction === 'asc'
+                    ? $projects->sortBy('waktu_selesai')
+                    : $projects->sortByDesc('waktu_selesai'),
+                default => $projects,
+            };
+        }
 
         return view('projects.index', [
             'projects' => $projects,
             'users' => User::all(),
             'applications' => Application::all(),
             'search' => $search,
+            'allTypes' => $allTypes, 
         ]);
     }
+
 
     public function store(Request $request)
     {
