@@ -27,7 +27,7 @@ class ProjectController extends Controller
 
         // Handle sorting
         $sort = $request->input('sort');
-        $allTypes = Project::select('tipe')->distinct()->pluck('tipe');
+        // $allTypes = Project::select('tipe')->distinct()->pluck('tipe');
 
         if ($sort) {
             [$key, $direction] = explode(':', $sort);
@@ -50,7 +50,7 @@ class ProjectController extends Controller
             'users' => User::all(),
             'applications' => Application::all(),
             'search' => $search,
-            'allTypes' => $allTypes, 
+            // 'allTypes' => $allTypes, 
         ]);
     }
 
@@ -79,6 +79,33 @@ class ProjectController extends Controller
             'tipe',
         ]));
         return redirect()->route('projects.index');
+    }
+
+    public function update(Request $request, Project $project)
+    {
+        $validated = $request->validate([
+            'nama' => 'required',
+            'key' => 'required',
+            'deskripsi' => 'required',
+            'id_lead' => 'required|exists:users,id',
+            'id_aplikasi' => 'required|exists:applications,id',
+            'waktu_mulai' => 'required|date',
+            'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
+            'tipe' => 'required',
+        ]);
+
+        $project->update($validated);
+
+        return redirect()->route('projects.index')->with('success', 'Project updated successfully!');
+    }
+
+
+    
+    public function destroy(Project $project)
+    {
+        $project->delete();
+
+        return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
     }
 
     public function show($id)

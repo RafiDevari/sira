@@ -11,8 +11,8 @@ Route::post('/sprints', [SprintController::class, 'store'])->name('sprints.store
 Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 Route::patch('/tasks/{task}', [TaskController::class, 'updateUser'])->name('tasks.updateUser');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
-Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
-Route::get('/dashboard', [DashboardController::class, 'index']);
+Route::resource('projects', ProjectController::class)->except(['index', 'show']);
+
 
 Route::get('/', function () {
     return view('welcome');
