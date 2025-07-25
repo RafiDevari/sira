@@ -96,6 +96,15 @@
         opacity: 1 !important;
         pointer-events: auto;
     }
+
+    .form-control-sm,
+    .form-select-sm {
+        border-radius: 0.5rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+    }   
+
 </style>
 
 <div class="container py-5">
@@ -106,7 +115,7 @@
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-md-between gap-3 mb-4">
         <form method="GET" class="d-flex flex-column flex-sm-row gap-2 flex-fill" style="max-width: 600px;">
             <!-- Search Bar -->
-            <div class="search-bar d-flex align-items-center border rounded px-2 flex-grow-1 w-100">
+            <div class="search-bar d-flex align-items-center border border-1 border-secondary rounded px-2 flex-grow-1 w-100">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="me-2 text-secondary">
                     <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
                         d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
@@ -353,7 +362,7 @@
 
     <!-- Create/Edit Project Modal -->
     <div id="projectModal" class="modal fade" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-dialog modal-md modal-dialog-centered">
             <div class="modal-content shadow-lg rounded-4 border-0">
                 <form method="POST" id="projectForm" action="{{ route('projects.store') }}">
                     @csrf
@@ -445,6 +454,7 @@
             </div>
         </div>
     </div>
+
 
 
     <!-- Global Dropdown for Project Actions -->
