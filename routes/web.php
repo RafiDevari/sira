@@ -12,6 +12,11 @@ Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
 Route::patch('/tasks/{task}', [TaskController::class, 'updateUser'])->name('tasks.updateUser');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::resource('projects', ProjectController::class)->except(['index', 'show']);
+Route::put('/tasks/{id}', [TaskController::class, 'update'])->name('tasks.update');
+Route::post('/tasks/{id}/delete', [TaskController::class, 'delete'])->name('tasks.delete');
+Route::put('/tasks/{id}/update-user', [TaskController::class, 'updateUser'])->name('tasks.updateUser');
+Route::put('/tasks/{id}/update-status', [TaskController::class, 'updateStatus']);
+
 
 
 Route::get('/', function () {

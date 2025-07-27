@@ -22,13 +22,46 @@ class TaskController extends Controller
         return redirect()->route('projects.show', $sprint->id_project);
     }
 
-    public function updateUser(Request $request, Task $task)
+    public function update(Request $request, $id)
     {
+        $task = Task::findOrFail($id);
+        $task->update([
+            'name' => $request->name,
+            'user_id' => $request->user_id,
+            'status' => $request->status,
+        ]);
+
+        return back();
+    }
+
+    public function delete(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $task->delete();
+
+        return back();
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $task = Task::findOrFail($id); // <-- loads the existing Task
+
         $task->user_id = $request->user_id;
         $task->save();
 
         $sprint = $task->sprint;
         return redirect()->route('projects.show', $sprint->id_project);
     }
+
+
+    public function updateStatus(Request $request, $id)
+    {
+        $task = Task::findOrFail($id);
+        $task->status = $request->status;
+        $task->save();
+
+        return redirect()->back();
+    }
+
 
 }
