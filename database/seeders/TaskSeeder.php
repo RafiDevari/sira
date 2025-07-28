@@ -15,7 +15,7 @@ class TaskSeeder extends Seeder
             'name' => 'Design wireframes',
             'sprint_id' => 1,
             'user_id' => 1,
-            'status' => 'IN PROGRESS',
+            'status' => 'IN REVIEW',
             'type' => 'Bug',
         ]);
 
@@ -33,6 +33,21 @@ class TaskSeeder extends Seeder
             'user_id' => 2,
             'status' => 'DONE',
             'type' => 'Task',
+        ]);
+        Task::create([
+            'name' => 'Update documentation',
+            'sprint_id' => 2,
+            'user_id' => 4,
+            'status' => 'TO DO',
+            'type' => 'Request',
+        ]);
+
+        Task::create([
+            'name' => 'Refactor codebase',
+            'sprint_id' => 1,
+            'user_id' => 4,
+            'status' => 'IN PROGRESS',
+            'type' => 'Story',
         ]);
 
         Task::create([

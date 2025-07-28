@@ -1,78 +1,318 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .dots-btn {
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .dots-btn:hover {
+        border: 1px solid #d0d0d0; /* border on hover like the image */
+        background-color: #f8f9fa;
+    }
+
+    .dropdown-item:hover {
+        background-color: #f1f1f1; /* Button hover effect */
+    }
+
+    .modal-header {
+        padding: 0.75rem 1.25rem;
+    }
+
+    .modal-title {
+        font-size: 1.1rem;
+    }
+
+    .modal-body {
+        background: #fff;
+    }
+
+    .modal-body h6 {
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        border-radius: 6px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #0069d9;
+    }
+
+    .arrow-icon {
+        transform: rotate(0deg);
+        transition: transform 0.3s ease;
+    }
+
+    .arrow-icon.rotated {
+        transform: rotate(90deg);
+    }
+
+    .card-toggle {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, padding 0.3s ease;
+    }
+
+    .card-toggle.expanded {
+        max-height: 500px; /* set according to expected max content height */
+    }
+
+    .card-toggle p {
+        margin: 0;
+    }
+
+    .arrow-icon {
+        transform: rotate(0deg);
+        transition: transform 0.3s ease;
+    }
+
+    .arrow-icon.rotated {
+        transform: rotate(90deg);
+    }
+
+    .arrow-icon:hover {
+        transform: rotate(45deg);
+    }
+
+    .arrow-icon:hover path {
+        stroke: #1d4ed8; /* e.g. Tailwind's blue-700 */
+    }
+
+    .hover-card {
+        transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .hover-card:hover {
+        background-color: #f1f5f9; /* Light gray */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .editbtn {
+        transition: border 0.2s ease, padding 0.2s ease;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+
+    .editbtn:hover {
+        border: 1px solid #6c757d; /* Bootstrap's "text-secondary" color */
+        background-color: rgba(108, 117, 125, 0.05); /* subtle background on hover (optional) */
+        cursor: pointer;
+    }
+
+
+</style>
+
 <div class="container">
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <!-- Left side: Project Name & Timeline -->
-    <div>
-        <h2 class="mb-1">{{ $project->nama }}</h2>
-        <div class="text-muted small d-flex align-items-center">
-            <svg class="w-6 h-6 text-gray-800 dark:text-white me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
-            </svg>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Left side: Project Name & Timeline -->
+        <div>
+            <h2 class="mb-1">{{ $project->nama }}</h2>
+            <div class="text-muted small d-flex align-items-center">
+                <svg class="w-6 h-6 text-gray-800 dark:text-white me-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 10h16m-8-3V4M7 7V4m10 3V4M5 20h14a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Zm3-7h.01v.01H8V13Zm4 0h.01v.01H12V13Zm4 0h.01v.01H16V13Zm-8 4h.01v.01H8V17Zm4 0h.01v.01H12V17Zm4 0h.01v.01H16V17Z"/>
+                </svg>
 
-            {{ \Carbon\Carbon::parse($project->waktu_mulai)->format('d F') }} - {{ \Carbon\Carbon::parse($project->waktu_selesai)->format('d F') }}
+                {{ \Carbon\Carbon::parse($project->waktu_mulai)->format('d F') }} - {{ \Carbon\Carbon::parse($project->waktu_selesai)->format('d F') }}
+            </div>
         </div>
-    </div>
 
-    <!-- Right side: Project label -->
-    <button class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#addSprintModal">
-        + Add Sprint
-    </button>
-</div>
+        
+    </div>
     <div>
         <p class="text-muted">{{ $project->deskripsi }}</p>
     </div>
 
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+        <!-- Search & Filter Form -->
+        <form method="GET" class="d-flex flex-column flex-md-row align-items-md-center gap-2 flex-grow-1" style="max-width: 100%;">
+            <!-- Search bar -->
+            <div class="search-bar d-flex align-items-center border border-1 border-secondary rounded px-2 w-100" style="max-width: 280px; height: 38px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="me-2 text-secondary">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                        d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
+                </svg>
+                <input type="text" name="search"
+                    placeholder="Search projects name or key..."
+                    class="form-control border-0 shadow-none p-0"
+                    style="font-size: 0.875rem; line-height: 1.5;" />
+            </div>
+
+
+
+            <!-- Dropdown Filter -->
+            <div class="dropdown flex-shrink-0">
+                <button id="typeDropdownBtn"
+                    class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center w-100"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <svg class="me-2" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                            d="M18.796 4H5.204a1 1 0 0 0-.753 1.659l5.302 6.058a1 1 0 0 1 .247.659v4.874a.5.5 0 0 0 .2.4l3 2.25a.5.5 0 0 0 .8-.4v-7.124a1 1 0 0 1 .247-.659l5.302-6.059c.566-.646.106-1.658-.753-1.658Z" />
+                    </svg>
+                    <span id="typeLabel">{{ request('type') ?: 'Filter by type' }}</span>
+                </button>
+                <ul class="dropdown-menu w-100">
+                    <li><button class="dropdown-item" type="button" onclick="">Filter by type</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="">Bug</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="">Feature</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="">Request</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="">Story</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="">Task</button></li>
+                </ul>
+            </div>
+
+            <!-- Search Button -->
+            <button type="submit" class="btn btn-primary fw-semibold flex-shrink-0">Search</button>
+        </form>
+
+        <!-- Sticky Add Sprint Button -->
+        <div class="flex-shrink-0">
+            <button class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#addSprintModal">
+                + Add Sprint
+            </button>
+        </div>
+    </div>
 
 
     @foreach($project->sprints as $sprint)
         <div class="bg-light p-3 mb-3 rounded">
             <div class="card border-0">
-                <div class="card-header bg-light d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>{{ $sprint->nama }}</strong>
-                        <span class="text-muted">({{ $sprint->status }})</span><br>
-                        <small>{{ $sprint->waktu_mulai }} – {{ $sprint->waktu_selesai }}</small>
+                <div class="card-header bg-light d-flex bd-highlight align-items-center">
+                    <div class=" toggle-header bd-highlight me-3" onclick="toggleCard(this)">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-white arrow-icon transition" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                        </svg>
+
                     </div>
-                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal-{{ $sprint->id }}">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong class="d-block">{{ $sprint->nama }}</strong>
+                            <small class="d-block">
+                                {{ \Carbon\Carbon::parse($sprint->waktu_mulai)->format('d F') }} - 
+                                {{ \Carbon\Carbon::parse($sprint->waktu_selesai)->format('d F') }}
+                            </small>
+                        </div>
+
+                        <form method="POST" action="{{ url('/sprints/' . $sprint->id . '/toggle-status') }}" class="ms-4">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit"
+                                class="btn btn-sm px-3 py-1 rounded-pill fw-semibold toggle-status-btn {{ $sprint->status == 'COMPLETED' ? 'btn-success' : 'btn-outline-secondary' }}"
+                                onclick="this.querySelector('input[name=status]').value = '{{ $sprint->status == 'COMPLETED' ? 'IN PROGRESS' : 'COMPLETED' }}'">
+                                {{ $sprint->status == 'COMPLETED' ? '☑️ Completed' : '⬜ In Progress' }}
+                                <input type="hidden" name="status" value="">
+                            </button>
+                        </form>
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-primary bd-highlight ms-auto" data-bs-toggle="modal" data-bs-target="#addTaskModal-{{ $sprint->id }}">
                         + Add Task
                     </button>
+                    <div class="dropdown ms-2">
+                        <button class="btn btn-sm dots-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                                    d="M6 12h.01m6 0h.01m5.99 0h.01" />
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu shadow-sm">
+                            <li>
+                                <button
+                                    type="button"
+                                    class="dropdown-item d-flex align-items-center edit-sprint-btn"
+                                    data-bs-toggle="modal" data-bs-target="#addSprintModal"
+                                    data-title="Edit Sprint"
+                                    data-action="{{ url('/sprints/' . $sprint->id . '/update') }}"
+                                    data-nama="{{ $sprint->nama }}"
+                                    data-start="{{ $sprint->waktu_mulai }}"
+                                    data-end="{{ $sprint->waktu_selesai }}"
+                                    data-status="{{ $sprint->status }}"
+                                >
+                                    <svg class="w-6 h-6 text-gray-800 dark:text-white me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z"/>
+                                    </svg>
+                                    <span>Edit</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button 
+                                    type="button" 
+                                    class="dropdown-item d-flex align-items-center "
+                                    onclick="confirmDelete({{ $sprint->id }}, '{{ addslashes($sprint->name) }}')"
+                                >
+                                    <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 15v3c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1v-3M3 15V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v9M3 15h18M8 15v4m4-4v4m4-4v4M12 10l1.5-1.5M12 10l-1.5-1.5M12 10l1.5 1.5M12 10l-1.5 1.5" />
+                                    </svg>
+                                    <span>Delete</span>
+                                </button>
+
+                                <!-- Hidden form to be submitted by JS -->
+                                <form id="delete-form-{{ $sprint->id }}" action="{{ url('/sprints/' . $sprint->id . '/delete') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </li>
+
+
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="card-body p-0 shadow-sm">
+                <div class="card-body p-0 shadow-sm card-toggle collapsed " style="overflow:visible;">
                     <ul class="list-group list-group-flush">
                         @foreach($sprint->tasks as $task)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div class="row">
+                            <li class="list-group-item hover-card d-flex justify-content-between align-items-center">
+                                <div class="row align-items-center w-100">
                                     <!-- Display Task Title -->
-                                    <div class="col-sm fw-semibold" id="task-display-{{ $task->id }}">
+                                    <div class="col-auto" >
                                         @if ($task->type === 'Bug')
-                                            <svg class="w-6 h-6 text-danger dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5 9 4V3m5 2 1-1V3m-3 6v11m0-11a5 5 0 0 1 5 5m-5-5a5 5 0 0 0-5 5m5-5a4.959 4.959 0 0 1 2.973 1H15V8a3 3 0 0 0-6 0v2h.027A4.959 4.959 0 0 1 12 9Zm-5 5H5m2 0v2a5 5 0 0 0 10 0v-2m2.025 0H17m-9.975 4H6a1 1 0 0 0-1 1v2m12-3h1.025a1 1 0 0 1 1 1v2M16 11h1a1 1 0 0 0 1-1V8m-9.975 3H7a1 1 0 0 1-1-1V8"/>
+                                            <svg data-bs-toggle="tooltip" title="Bug" class="w-6 h-6 text-danger dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M18 17h-.09c.058-.33.088-.665.09-1v-1h1a1 1 0 0 0 0-2h-1.09a5.97 5.97 0 0 0-.26-1H17a2 2 0 0 0 2-2V8a1 1 0 1 0-2 0v2h-.54a6.239 6.239 0 0 0-.46-.46V8a3.963 3.963 0 0 0-.986-2.6l.693-.693A1 1 0 0 0 16 4V3a1 1 0 1 0-2 0v.586l-.661.661a3.753 3.753 0 0 0-2.678 0L10 3.586V3a1 1 0 1 0-2 0v1a1 1 0 0 0 .293.707l.693.693A3.963 3.963 0 0 0 8 8v1.54a6.239 6.239 0 0 0-.46.46H7V8a1 1 0 0 0-2 0v2a2 2 0 0 0 2 2h-.65a5.97 5.97 0 0 0-.26 1H5a1 1 0 0 0 0 2h1v1a6 6 0 0 0 .09 1H6a2 2 0 0 0-2 2v2a1 1 0 1 0 2 0v-2h.812A6.012 6.012 0 0 0 11 21.907V12a1 1 0 0 1 2 0v9.907A6.011 6.011 0 0 0 17.188 19H18v2a1 1 0 0 0 2 0v-2a2 2 0 0 0-2-2Zm-4-8.65a5.922 5.922 0 0 0-.941-.251l-.111-.017a5.52 5.52 0 0 0-1.9 0l-.111.017A5.925 5.925 0 0 0 10 8.35V8a2 2 0 1 1 4 0v.35Z"/>
                                             </svg>
+
 
                                         @elseif ($task->type === 'Feature')
-                                            <svg class="w-6 h-6 text-warning dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                                                <path fill="currentColor" d="M10.7367 14.5876c.895.2365 2.8528.754 3.1643-.4966.3179-1.2781-1.5795-1.7039-2.5053-1.9117-.1034-.0232-.1947-.0437-.2694-.0623l-.6025 2.4153c.0611.0152.1328.0341.2129.0553Zm.8452-3.5291c.7468.1993 2.3746.6335 2.6581-.5025.2899-1.16213-1.2929-1.5124-2.066-1.68348-.0869-.01923-.1635-.03619-.2262-.0518l-.5462 2.19058c.0517.0129.1123.0291.1803.0472Z"/>
-                                                <path fill="currentColor" fill-rule="evenodd" d="M9.57909 21.7008c5.35781 1.3356 10.78401-1.9244 12.11971-7.2816 1.3356-5.35745-1.9247-10.78433-7.2822-12.11995C9.06034.963624 3.6344 4.22425 2.2994 9.58206.963461 14.9389 4.22377 20.3652 9.57909 21.7008ZM14.2085 8.0526c1.3853.47719 2.3984 1.1925 2.1997 2.5231-.1441.9741-.6844 1.4456-1.4013 1.6116.9844.5128 1.485 1.2987 1.0078 2.6612-.5915 1.6919-1.9987 1.8347-3.8697 1.4807l-.454 1.8196-1.0972-.2734.4481-1.7953c-.2844-.0706-.575-.1456-.8741-.2269l-.44996 1.8038-1.09594-.2735.45407-1.8234c-.10059-.0258-.20185-.0522-.30385-.0788-.15753-.0411-.3168-.0827-.47803-.1231l-1.42812-.3559.54468-1.2563s.80844.215.7975.1991c.31063.0769.44844-.1256.50282-.2606l.71781-2.8766.11562.0288c-.04375-.0175-.08343-.0288-.11406-.0366l.51188-2.05344c.01375-.23312-.06688-.52719-.51125-.63812.01718-.01157-.79688-.19813-.79688-.19813l.29188-1.17187 1.51313.37781-.0013.00562c.2275.05657.4619.11032.7007.16469l.4497-1.80187 1.0965.27343-.4406 1.76657c.2944.06718.5906.135.8787.20687l.4375-1.755 1.0975.27344-.4493 1.8025Z" clip-rule="evenodd"/>
+                                            <svg data-bs-toggle="tooltip" title="Feature" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fill-rule="evenodd" d="M5.005 10.19a1 1 0 0 1 1 1v.233l5.998 3.464L18 11.423v-.232a1 1 0 1 1 2 0V12a1 1 0 0 1-.5.866l-6.997 4.042a1 1 0 0 1-1 0l-6.998-4.042a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1ZM5 15.15a1 1 0 0 1 1 1v.232l5.997 3.464 5.998-3.464v-.232a1 1 0 1 1 2 0v.81a1 1 0 0 1-.5.865l-6.998 4.042a1 1 0 0 1-1 0L4.5 17.824a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
+                                                <path d="M12.503 2.134a1 1 0 0 0-1 0L4.501 6.17A1 1 0 0 0 4.5 7.902l7.002 4.047a1 1 0 0 0 1 0l6.998-4.04a1 1 0 0 0 0-1.732l-6.997-4.042Z"/>
                                             </svg>
 
+
                                         @elseif ($task->type === 'Task')
-                                            <svg class="w-6 h-6 text-light dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                                                <path fill-rule="evenodd" d="M18.458 3.11A1 1 0 0 1 19 4v16a1 1 0 0 1-1.581.814L12 16.944V7.056l5.419-3.87a1 1 0 0 1 1.039-.076ZM22 12c0 1.48-.804 2.773-2 3.465v-6.93c1.196.692 2 1.984 2 3.465ZM10 8H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6V8Zm0 9H5v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-3Z" clip-rule="evenodd"/>
+                                            <svg data-bs-toggle="tooltip" title="Task" class="w-6 h-6 text-primary dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
+                                            </svg>
+
+
+                                        @elseif ($task->type === 'Story')
+                                            <svg data-bs-toggle="tooltip" title="Story" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M7.833 2c-.507 0-.98.216-1.318.576A1.92 1.92 0 0 0 6 3.89V21a1 1 0 0 0 1.625.78L12 18.28l4.375 3.5A1 1 0 0 0 18 21V3.889c0-.481-.178-.954-.515-1.313A1.808 1.808 0 0 0 16.167 2H7.833Z"/>
+                                            </svg>
+
+                                        @elseif ($task->type === 'Request')
+                                            <svg data-bs-toggle="tooltip" title="Request" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clip-rule="evenodd"/>
                                             </svg>
 
                                         @endif
+
                                         
-                                        <div class="d-inline ms-2" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                            SCRUM-{{ $task->id }} - {{ $task->name }}
-                                        </div>
+                                    </div>
+
+                                    <div class="col-auto fw-semibold" id="task-display-{{ $task->id }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                        SCRUM-{{ $task->id }} - {{ $task->name }}
                                     </div>
 
                                     <!-- Edit Button (SVG Icon) -->
-                                    <div class="col-auto text-secondary" id="edit-button-{{ $task->id }}">
-                                        <svg class="w-6 h-6 text-gray-800 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                                    <div class="col-auto text-secondary editbtn align-items-center" id="edit-button-{{ $task->id }}">
+                                        <svg class="text-gray-800 cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
                                             viewBox="0 0 24 24" onclick="toggleEdit({{ $task->id }})">
                                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
@@ -80,11 +320,11 @@
                                     </div>
 
                                     <!-- Edit Form - HIDDEN INITIALLY -->
-                                    <form method="POST" id="edit-form-{{ $task->id }}" class="w-100 align-items-start gap-2" style="display: none;" action="{{ url('/tasks/' . $task->id) }}">
+                                    <form method="POST" id="edit-form-{{ $task->id }}" class="w-100 col-auto gap-2 " style="display: none;max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" action="{{ url('/tasks/' . $task->id) }}">
                                         @csrf
                                         @method('PUT')
 
-                                        <input style="max-width: 300px;" id="edit-input-{{ $task->id }}" name="name" class="form-control" value="{{ $task->name }}" required>
+                                        <input style="max-width: 300px;" id="edit-input-{{ $task->id }}" name="name" class="form-control col" value="{{ $task->name }}" required>
 
                                         <!-- Buttons -->
                                         <div class="d-flex gap-1">
@@ -136,21 +376,67 @@
                                     <form method="POST" action="{{ url('/tasks/' . $task->id . '/update-user') }}">
                                         @csrf
                                         @method('PUT')
-                                        <select name="user_id" onchange="this.form.submit()" class="form-select form-select-sm">
-                                            <option value="">👤 Unassigned</option>
-                                            @foreach($users as $user)
-                                                <option value="{{ $user->id }}" {{ $task->user_id == $user->id ? 'selected' : '' }}>
-                                                    👤 {{ $user->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        
+                                        <div class="dropdown custom-dropdown">
+                                            <button
+                                                class="btn btn-light btn-sm dropdown-toggle w-100 text-start d-flex align-items-center"
+                                                type="button"
+                                                id="userDropdown{{ $task->id }}"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                                👤 {{ $task->user?->name ?? 'Unassigned' }}
+                                            </button>
+                                            
+                                            <ul class="dropdown-menu animate-dropdown w-100" aria-labelledby="userDropdown{{ $task->id }}">
+                                                <li>
+                                                    <button type="submit" name="user_id" value="" class="dropdown-item {{ $task->user_id ? '' : 'active' }}">
+                                                        👤 Unassigned
+                                                    </button>
+                                                </li>
+                                                @foreach($users as $user)
+                                                    <li>
+                                                        <button type="submit" name="user_id" value="{{ $user->id }}" class="dropdown-item {{ $task->user_id == $user->id ? 'active' : '' }}">
+                                                            👤 {{ $user->name }}
+                                                        </button>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
                                     </form>
 
-                                    <!-- Delete Form (POST only) -->
-                                    <form action="{{ url('/tasks/' . $task->id . '/delete') }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                        @csrf
-                                        <button class="btn btn-sm btn-danger">🗑️</button>
-                                    </form>
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm dots-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="24"
+                                                height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                                                    d="M6 12h.01m6 0h.01m5.99 0h.01" />
+                                            </svg>
+                                        </button>
+                                        <ul class="dropdown-menu shadow-sm">
+                                            <li>
+                                                <button 
+                                                    type="button" 
+                                                    class="dropdown-item d-flex align-items-center text-danger"
+                                                    onclick="confirmDelete({{ $task->id }}, '{{ addslashes($task->name) }}')"
+                                                >
+                                                    <svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24">
+                                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M3 15v3c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1v-3M3 15V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v9M3 15h18M8 15v4m4-4v4m4-4v4M12 10l1.5-1.5M12 10l-1.5-1.5M12 10l1.5 1.5M12 10l-1.5 1.5" />
+                                                    </svg>
+                                                    <span>Delete</span>
+                                                </button>
+
+                                                <!-- Hidden form to be submitted by JS -->
+                                                <form id="delete-form-{{ $task->id }}" action="{{ url('/tasks/' . $task->id . '/delete') }}" method="POST" style="display: none;">
+                                                    @csrf
+                                                </form>
+                                            </li>
+
+
+                                        </ul>
+                                    </div>
+                                
                                 </div>
                             </li>
                         @endforeach
@@ -161,62 +447,230 @@
 
         <!-- Add Task Modal -->
         <div class="modal fade" id="addTaskModal-{{ $sprint->id }}" tabindex="-1">
-            <div class="modal-dialog">
-                <form class="modal-content" method="POST" action="{{ url('/tasks') }}">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+                <form class="modal-content rounded-3 shadow-lg" method="POST" action="{{ url('/tasks') }}">
                     @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title">Add Task to {{ $sprint->nama }}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                    <!-- Header -->
+                    <div class="modal-header border-0 bg-primary text-white">
+                        <h5 class="modal-title fw-bold">Add Task to {{ $sprint->nama }}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
-                        <input name="name" class="form-control mb-2" placeholder="Task Name" required>
+
+                    <!-- Body -->
+                    <div class="modal-body p-4">
+                        <label for="name" class="form-label">Task Name</label>
+                        <input name="name" class="form-control mb-3" placeholder="Design Framework" required>
                         <input type="hidden" name="sprint_id" value="{{ $sprint->id }}">
-                        <select name="user_id" class="form-control mb-2">
+
+                        <label for="user_id" class="form-label">User</label>
+                        <select name="user_id" class="form-select mb-3">
                             <option value="">Unassigned</option>
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }}</option>
                             @endforeach
                         </select>
-                        <select name="status" class="form-control mb-2" required>
+
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" class="form-select mb-3" required>
                             <option value="TO DO">TO DO</option>
                             <option value="IN PROGRESS">IN PROGRESS</option>
                             <option value="IN REVIEW">IN REVIEW</option>
                             <option value="DONE">DONE</option>
                         </select>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary">Save</button>
+
+                    <!-- Footer -->
+                    <div class="modal-footer border-0">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">
+                            Save Task
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
+
     @endforeach
 </div>
 
 <!-- Add Sprint Modal -->
 <div class="modal fade" id="addSprintModal" tabindex="-1">
-    <div class="modal-dialog">
-        <form class="modal-content" method="POST" action="{{ url('/sprints') }}">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <form class="modal-content rounded-3 shadow-lg" id="sprintForm" method="POST" action="{{ url('/sprints') }}">
             @csrf
-            <div class="modal-header"><h5 class="modal-title">Add Sprint</h5></div>
-            <div class="modal-body">
-                <input name="id_project" type="hidden" value="{{ $project->id }}">
-                <input name="nama" class="form-control mb-2" placeholder="Sprint Name" required>
-                <input type="date" name="waktu_mulai" class="form-control mb-2" required>
-                <input type="date" name="waktu_selesai" class="form-control mb-2" required>
-                <input name="status" class="form-control mb-2" placeholder="Status" required>
+
+            <!-- Header -->
+            <div class="modal-header border-0 bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="sprintModalTitle">Add a Sprint</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-footer"><button class="btn btn-primary">Save</button></div>
+
+            <!-- Body -->
+            <div class="modal-body p-4">
+                <input name="id_project" type="hidden" value="{{ $project->id }}">
+                <label for="nama" class="form-label">Sprint Name</label>
+                <input name="nama" id="sprintNama" class="form-control mb-3" placeholder="Sprint 1" required>
+                <label for="waktu-mulai" class="form-label">Start Time</label>
+                <input type="date" name="waktu_mulai" id="waktu_mulai" class="form-control mb-3" required>
+                <label for="waktu-selesai" class="form-label">End Time</label>
+                <input type="date" name="waktu_selesai" id="waktu_selesai" class="form-control mb-3" required>
+                <input hidden name="status" value="IN PROGRESS" id="sprintStatus" class="form-control mb-3" required>
+            </div>
+
+            <!-- Footer -->
+            <div class="modal-footer border-0">
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    Save Sprint
+                </button>
+            </div>
         </form>
     </div>
 </div>
 
 
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg rounded-4 border-0 animate__animated animate__fadeInDown">
+            <div class="modal-header bg-danger text-white rounded-top-4">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                    <h5 class="modal-title mb-0" id="deleteConfirmModalLabel">Delete Confirmation</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-3 fs-6">Are you sure you want to delete this task?</p>
+                <h6 id="delete-task-name" class="fw-bold text-danger text-uppercase"></h6>
+            </div>
+            <div class="modal-footer justify-content-center border-0 pb-4">
+                <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger px-4 rounded-pill" id="btnDelete" onclick="submitDelete()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
 @push('scripts')
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('addSprintModal');
+        const title = document.getElementById('sprintModalTitle');
+        const form = document.getElementById('sprintForm');
+        const inputNama = document.getElementById('sprintNama');
+        const inputMulai = document.getElementById('waktu_mulai');
+        const inputSelesai = document.getElementById('waktu_selesai');
+        const selectStatus = document.getElementById('sprintStatus');
+
+        document.querySelectorAll('.edit-sprint-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                // Change modal title
+                title.textContent = this.dataset.title || 'Edit Sprint';
+
+                // Update form action
+                form.action = this.dataset.action || "{{ url('/sprints') }}";
+
+                // Update input values
+                inputNama.value = this.dataset.nama || '';
+                inputMulai.value = this.dataset.start || '';
+                inputSelesai.value = this.dataset.end || '';
+                selectStatus.value = this.dataset.status || 'IN PROGRESS';
+            });
+        });
+
+        // Optional: Reset form when modal hides
+        modal.addEventListener('hidden.bs.modal', function () {
+            title.textContent = 'Add a Sprint';
+            form.action = "{{ url('/sprints') }}";
+            inputNama.value = '';
+            inputMulai.value = '';
+            inputSelesai.value = '';
+            selectStatus.value = 'IN PROGRESS';
+        });
+    });
+
+    function toggleCard(header) {
+        const icon = header.querySelector('.arrow-icon');
+        const cardBody = document.querySelector('.card-body');
+
+        const isExpanded = cardBody.classList.contains('expanded');
+
+        cardBody.style.overflow = isExpanded ? 'hidden' : 'visible';
+        icon.classList.toggle('rotated', !isExpanded);
+        cardBody.classList.toggle('expanded', !isExpanded);
+    }
+
+    function setupDateConstraints() {
+        const startInput = document.getElementById('waktu_mulai');
+        const endInput = document.getElementById('waktu_selesai');
+
+        if (!startInput || !endInput) return;
+
+        function updateConstraints() {
+            if (startInput.value) {
+                endInput.min = startInput.value;
+            } else {
+                endInput.removeAttribute('min');
+            }
+
+            if (endInput.value) {
+                startInput.max = endInput.value;
+            } else {
+                startInput.removeAttribute('max');
+            }
+        }
+
+        startInput.addEventListener('change', updateConstraints);
+        endInput.addEventListener('change', updateConstraints);
+
+        updateConstraints();
+    }
+
+    // Initialize date constraints on modal show
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById('addSprintModal');
+        if (modal) {
+            modal.addEventListener('shown.bs.modal', function () {
+                setupDateConstraints();
+            });
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.card-toggle').forEach(card => {
+            card.classList.add('expanded');
+        });
+
+        document.querySelectorAll('.arrow-icon').forEach(icon => {
+            icon.classList.add('rotated');
+        });
+    });
+
+    let TaskIdToDelete = null;
+
+    function confirmDelete(taskId, taskName) {
+        TaskIdToDelete = taskId;
+        document.getElementById('delete-task-name').innerText = taskName;
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+    }
+
+    function submitDelete() {
+        if (TaskIdToDelete !== null) {
+            const form = document.getElementById(`delete-form-${TaskIdToDelete}`);
+            if (form) form.submit();
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+
     function toggleEdit(taskId) {
         const display = document.getElementById(`task-display-${taskId}`);
         const form = document.getElementById(`edit-form-${taskId}`);
@@ -225,7 +679,7 @@
 
         display.style.display = 'none';
         form.style.display = 'flex';
-    form.classList.add('d-flex')
+        form.classList.add('d-flex')
         button.style.display = 'none';
 
         // Focus input

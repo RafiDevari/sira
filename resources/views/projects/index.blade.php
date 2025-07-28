@@ -2,7 +2,35 @@
 
 @section('content')
 <style>
-    /* Hover effect for sortable table headers */
+    .search-bar {
+        display: flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        background-color: white;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        width: 100%;
+    }
+
+    .search-bar:focus-within {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .search-bar svg {
+        margin-right: 0.5rem;
+        color: #6c757d;
+        flex-shrink: 0;
+    }
+
+    .search-bar input {
+        border: none;
+        outline: none;
+        flex: 1;
+        padding: 0;
+        background: transparent;
+    }
     th.sortable:hover {
         background-color: #f1f1f1;
         cursor: pointer;
@@ -151,12 +179,6 @@
                                 onclick="setTypeFilter('Hardware', 'Hardware')">Hardware</button></li>
                         <li><button class="dropdown-item" type="button"
                                 onclick="setTypeFilter('Network', 'Network')">Network</button></li>
-                        {{-- 
-                        @foreach($allTypes as $tipe)
-                            <li><button class="dropdown-item" type="button"
-                                    onclick="setTypeFilter('{{ $tipe }}', '{{ $tipe }}')">{{ $tipe }}</button></li>
-                        @endforeach 
-                        --}}
                     </ul>
                 </div>
 
@@ -295,13 +317,18 @@
                                             '{{ $project->waktu_selesai }}',
                                             '{{ $project->tipe }}'
                                         )">
-                                        <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="18"
-                                            height="18" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
-                                        </svg>
-                                        Edit
+                                        <div class="align-items-center d-flex gap-2">
+                                            <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="18"
+                                                height="18" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                                            </svg>
+                                            <div>
+                                                Edit
+                                            </div>
+                                        </div>
+                                        
                                     </button>
 
                                     <!-- Delete Button -->
@@ -309,13 +336,19 @@
                                         onmouseover="this.style.background='#f5f5f5'" 
                                         onmouseout="this.style.background='none'"
                                         onclick="confirmDelete({{ $project->id }}, '{{ addslashes($project->nama) }}')">
-                                        <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="18"
-                                            height="18" fill="none" viewBox="0 0 24 24">
-                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M3 15v3c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1v-3M3 15V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v9M3 15h18M8 15v4m4-4v4m4-4v4m-5.5061-7.4939L12 10m0 0 1.5061-1.50614M12 10l1.5061 1.5061M12 10l-1.5061-1.50614" />
-                                        </svg>
-                                        Delete
+                                        <div class="align-items-center d-flex gap-2">
+                                            <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="18"
+                                                height="18" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                    stroke-width="2"
+                                                    d="M3 15v3c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1v-3M3 15V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v9M3 15h18M8 15v4m4-4v4m4-4v4m-5.5061-7.4939L12 10m0 0 1.5061-1.50614M12 10l1.5061 1.5061M12 10l-1.5061-1.50614" />
+                                            </svg>
+                                            <div>
+                                                Delete
+
+                                            </div>
+                                        </div>
+                                        
                                     </button>
 
                                     <form id="delete-form-{{ $project->id }}" method="POST"

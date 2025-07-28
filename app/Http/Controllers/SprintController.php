@@ -17,8 +17,19 @@ class SprintController extends Controller
             'status' => 'required',
         ]);
 
+        
         Sprint::create($request->all());
         return redirect()->route('projects.show', $request->id_project);
     }
+
+    public function toggleStatus(Request $request, $id)
+    {
+        $sprint = Sprint::findOrFail($id);
+        $sprint->status = $request->status;
+        $sprint->save();
+
+        return back(); // or redirect to another page if needed
+    }
+
 
 }

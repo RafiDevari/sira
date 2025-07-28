@@ -16,7 +16,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 1',
             'waktu_mulai' => now()->subDays(30),
             'waktu_selesai' => now()->subDays(15),
-            'status' => 'completed',
+            'status' => 'COMPLETED',
         ]);
 
         Sprint::create([
@@ -24,7 +24,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 2',
             'waktu_mulai' => now()->subDays(14),
             'waktu_selesai' => now()->addDays(1),
-            'status' => 'in progress',
+            'status' => 'IN PROGRESS',
         ]);
 
         Sprint::create([
@@ -32,7 +32,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 1',
             'waktu_mulai' => now()->subDays(30),
             'waktu_selesai' => now()->subDays(15),
-            'status' => 'completed',
+            'status' => 'COMPLETED',
         ]);
 
         Sprint::create([
@@ -40,7 +40,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 2',
             'waktu_mulai' => now()->subDays(14),
             'waktu_selesai' => now()->addDays(1),
-            'status' => 'in progress',
+            'status' => 'IN PROGRESS',
         ]);
         
         Sprint::create([
@@ -48,7 +48,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 1',
             'waktu_mulai' => now()->subDays(30),
             'waktu_selesai' => now()->subDays(15),
-            'status' => 'completed',
+            'status' => 'COMPLETED',
         ]);
 
         Sprint::create([
@@ -56,7 +56,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 2',
             'waktu_mulai' => now()->subDays(14),
             'waktu_selesai' => now()->addDays(1),
-            'status' => 'in progress',
+            'status' => 'IN PROGRESS',
         ]);
 
         Sprint::create([
@@ -64,7 +64,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 1',
             'waktu_mulai' => now()->subDays(30),
             'waktu_selesai' => now()->subDays(15),
-            'status' => 'completed',
+            'status' => 'COMPLETED',
         ]);
 
         Sprint::create([
@@ -72,7 +72,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 2',
             'waktu_mulai' => now()->subDays(14),
             'waktu_selesai' => now()->addDays(1),
-            'status' => 'in progress',
+            'status' => 'IN PROGRESS',
         ]);
 
         Sprint::create([
@@ -80,7 +80,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 1',
             'waktu_mulai' => now()->subDays(30),
             'waktu_selesai' => now()->subDays(15),
-            'status' => 'completed',
+            'status' => 'COMPLETED',
         ]);
 
         Sprint::create([
@@ -88,7 +88,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 2',
             'waktu_mulai' => now()->subDays(14),
             'waktu_selesai' => now()->addDays(1),
-            'status' => 'in progress',
+            'status' => 'IN PROGRESS',
         ]);
 
         Sprint::create([
@@ -96,7 +96,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 1',
             'waktu_mulai' => now()->subDays(30),
             'waktu_selesai' => now()->subDays(15),
-            'status' => 'completed',
+            'status' => 'COMPLETED',
         ]);
 
         Sprint::create([
@@ -104,7 +104,7 @@ class SprintSeeder extends Seeder
             'nama' => 'Sprint 2',
             'waktu_mulai' => now()->subDays(14),
             'waktu_selesai' => now()->addDays(1),
-            'status' => 'in progress',
+            'status' => 'IN PROGRESS',
         ]);
 
     }
