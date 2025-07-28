@@ -15,7 +15,7 @@ class Task extends Model
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
     }
-    protected $fillable = ['name', 'sprint_id', 'status', 'user_id'];
+    protected $fillable = ['name', 'sprint_id', 'status', 'user_id', 'type'];
 
 
 }
