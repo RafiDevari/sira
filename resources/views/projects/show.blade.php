@@ -478,6 +478,15 @@
                             <option value="IN REVIEW">IN REVIEW</option>
                             <option value="DONE">DONE</option>
                         </select>
+
+                        <label for="type" class="form-label">Type</label>
+                        <select name="type" class="form-select mb-3" required>
+                            <option value="Bug">Bug</option>
+                            <option value="Feature">Feature</option>
+                            <option value="Task">Task</option>
+                            <option value="Story">Story</option>
+                            <option value="Request">Request</option>
+                        </select>
                     </div>
 
                     <!-- Footer -->
