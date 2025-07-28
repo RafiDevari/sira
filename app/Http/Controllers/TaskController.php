@@ -27,8 +27,6 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $task->update([
             'name' => $request->name,
-            'user_id' => $request->user_id,
-            'status' => $request->status,
         ]);
 
         return back();
