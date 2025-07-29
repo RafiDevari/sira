@@ -18,6 +18,7 @@ Route::put('/tasks/{id}/update-status', [TaskController::class, 'updateStatus'])
 Route::put('/sprints/{id}/toggle-status', [SprintController::class, 'toggleStatus']);
 Route::post('/sprints/{id}/delete', [SprintController::class, 'destroy'])->name('sprints.destroy');
 Route::post('/sprints/{id}/update', [SprintController::class, 'update'])->name('sprints.update');
+Route::put('/tasks/{id}/type', [TaskController::class, 'updateType'])->name('tasks.updateType');
 
 
 

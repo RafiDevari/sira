@@ -61,6 +61,19 @@ class TaskController extends Controller
 
         return redirect()->back();
     }
+    public function updateType(Request $request, $id)
+    {
+        $request->validate([
+            'type' => 'required|in:Bug,Feature,Task,Story,Request',
+        ]);
+
+        $task = Task::findOrFail($id);
+        $task->type = $request->type;
+        $task->save();
+
+        return back(); // or use redirect()->route(...) if needed
+    }
+
 
 
 }

@@ -108,10 +108,27 @@ class ProjectController extends Controller
         return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $project = Project::with('sprints.tasks.user')->findOrFail($id);
+        $project = Project::with(['sprints.tasks.user'])->findOrFail($id);
         $users = User::all();
+
+        $search = $request->input('search');
+        $type = $request->input('type');
+
+        $project->sprints->each(function ($sprint) use ($search, $type) {
+            $sprint->tasks = $sprint->tasks->filter(function ($task) use ($search, $type) {
+                $matchesSearch = $search ? (
+                    str_contains(strtolower($task->name), strtolower($search)) ||
+                    str_contains(strtolower($task->key), strtolower($search))
+                ) : true;
+
+                $matchesType = $type ? strtolower($task->type) === strtolower($type) : true;
+
+                return $matchesSearch && $matchesType;
+            })->values();
+        });
+
         return view('projects.show', compact('project', 'users'));
     }
 

@@ -139,6 +139,7 @@
                         d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" />
                 </svg>
                 <input type="text" name="search"
+                    value="{{ request('search') }}"
                     placeholder="Search projects name or key..."
                     class="form-control border-0 shadow-none p-0"
                     style="font-size: 0.875rem; line-height: 1.5;" />
@@ -148,6 +149,7 @@
 
             <!-- Dropdown Filter -->
             <div class="dropdown flex-shrink-0">
+                <input type="hidden" name="type" id="typeInput" value="{{ request('type') }}">
                 <button id="typeDropdownBtn"
                     class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center w-100"
                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -158,17 +160,26 @@
                     <span id="typeLabel">{{ request('type') ?: 'Filter by type' }}</span>
                 </button>
                 <ul class="dropdown-menu w-100">
-                    <li><button class="dropdown-item" type="button" onclick="">Filter by type</button></li>
-                    <li><button class="dropdown-item" type="button" onclick="">Bug</button></li>
-                    <li><button class="dropdown-item" type="button" onclick="">Feature</button></li>
-                    <li><button class="dropdown-item" type="button" onclick="">Request</button></li>
-                    <li><button class="dropdown-item" type="button" onclick="">Story</button></li>
-                    <li><button class="dropdown-item" type="button" onclick="">Task</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="setTypeFilter('')">All types</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="setTypeFilter('Bug')">Bug</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="setTypeFilter('Feature')">Feature</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="setTypeFilter('Request')">Request</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="setTypeFilter('Story')">Story</button></li>
+                    <li><button class="dropdown-item" type="button" onclick="setTypeFilter('Task')">Task</button></li>
                 </ul>
             </div>
 
+            <script>
+                function setTypeFilter(type) {
+                    document.getElementById('typeInput').value = type;
+                    document.getElementById('typeLabel').innerText = type || 'Filter by type';
+                    document.querySelector('form').submit();
+
+                }
+            </script>
+
             <!-- Search Button -->
-            <button type="submit" class="btn btn-primary fw-semibold flex-shrink-0">Search</button>
+            <button id="ibra" type="submit" class="btn btn-primary fw-semibold flex-shrink-0">Search</button>
         </form>
 
         <!-- Sticky Add Sprint Button -->
@@ -271,40 +282,109 @@
                             <li class="list-group-item hover-card d-flex justify-content-between align-items-center">
                                 <div class="row align-items-center w-100">
                                     <!-- Display Task Title -->
-                                    <div class="col-auto" >
-                                        @if ($task->type === 'Bug')
-                                            <svg data-bs-toggle="tooltip" title="Bug" class="w-6 h-6 text-danger dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                    <div class="col-auto dropdown">
+                                        <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="taskTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            @if ($task->type === 'Bug')
+                                                <svg data-bs-toggle="tooltip" title="Bug" class="w-6 h-6 text-danger dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M18 17h-.09c.058-.33.088-.665.09-1v-1h1a1 1 0 0 0 0-2h-1.09a5.97 5.97 0 0 0-.26-1H17a2 2 0 0 0 2-2V8a1 1 0 1 0-2 0v2h-.54a6.239 6.239 0 0 0-.46-.46V8a3.963 3.963 0 0 0-.986-2.6l.693-.693A1 1 0 0 0 16 4V3a1 1 0 1 0-2 0v.586l-.661.661a3.753 3.753 0 0 0-2.678 0L10 3.586V3a1 1 0 1 0-2 0v1a1 1 0 0 0 .293.707l.693.693A3.963 3.963 0 0 0 8 8v1.54a6.239 6.239 0 0 0-.46.46H7V8a1 1 0 0 0-2 0v2a2 2 0 0 0 2 2h-.65a5.97 5.97 0 0 0-.26 1H5a1 1 0 0 0 0 2h1v1a6 6 0 0 0 .09 1H6a2 2 0 0 0-2 2v2a1 1 0 1 0 2 0v-2h.812A6.012 6.012 0 0 0 11 21.907V12a1 1 0 0 1 2 0v9.907A6.011 6.011 0 0 0 17.188 19H18v2a1 1 0 0 0 2 0v-2a2 2 0 0 0-2-2Zm-4-8.65a5.922 5.922 0 0 0-.941-.251l-.111-.017a5.52 5.52 0 0 0-1.9 0l-.111.017A5.925 5.925 0 0 0 10 8.35V8a2 2 0 1 1 4 0v.35Z"/>
                                             </svg>
-
-
-                                        @elseif ($task->type === 'Feature')
-                                            <svg data-bs-toggle="tooltip" title="Feature" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                            @elseif ($task->type === 'Feature')
+                                                <svg data-bs-toggle="tooltip" title="Feature" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                 <path fill-rule="evenodd" d="M5.005 10.19a1 1 0 0 1 1 1v.233l5.998 3.464L18 11.423v-.232a1 1 0 1 1 2 0V12a1 1 0 0 1-.5.866l-6.997 4.042a1 1 0 0 1-1 0l-6.998-4.042a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1ZM5 15.15a1 1 0 0 1 1 1v.232l5.997 3.464 5.998-3.464v-.232a1 1 0 1 1 2 0v.81a1 1 0 0 1-.5.865l-6.998 4.042a1 1 0 0 1-1 0L4.5 17.824a1 1 0 0 1-.5-.866v-.81a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
                                                 <path d="M12.503 2.134a1 1 0 0 0-1 0L4.501 6.17A1 1 0 0 0 4.5 7.902l7.002 4.047a1 1 0 0 0 1 0l6.998-4.04a1 1 0 0 0 0-1.732l-6.997-4.042Z"/>
                                             </svg>
-
-
-                                        @elseif ($task->type === 'Task')
-                                            <svg data-bs-toggle="tooltip" title="Task" class="w-6 h-6 text-primary dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                            @elseif ($task->type === 'Task')
+                                                <svg data-bs-toggle="tooltip" title="Task" class="w-6 h-6 text-primary dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                 <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
                                             </svg>
-
-
-                                        @elseif ($task->type === 'Story')
-                                            <svg data-bs-toggle="tooltip" title="Story" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                            @elseif ($task->type === 'Story')
+                                                <svg data-bs-toggle="tooltip" title="Story" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M7.833 2c-.507 0-.98.216-1.318.576A1.92 1.92 0 0 0 6 3.89V21a1 1 0 0 0 1.625.78L12 18.28l4.375 3.5A1 1 0 0 0 18 21V3.889c0-.481-.178-.954-.515-1.313A1.808 1.808 0 0 0 16.167 2H7.833Z"/>
                                             </svg>
-
-                                        @elseif ($task->type === 'Request')
-                                            <svg data-bs-toggle="tooltip" title="Request" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                            @elseif ($task->type === 'Request')
+                                                <svg data-bs-toggle="tooltip" title="Request" class="w-6 h-6 text-success dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                 <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4.243a1 1 0 1 0-2 0V11H7.757a1 1 0 1 0 0 2H11v3.243a1 1 0 1 0 2 0V13h3.243a1 1 0 1 0 0-2H13V7.757Z" clip-rule="evenodd"/>
                                             </svg>
+                                            @endif
+                                        </button>
 
-                                        @endif
+                                        <ul class="dropdown-menu" aria-labelledby="taskTypeDropdown">
+                                            <li>
+                                                <form method="POST" action="{{ route('tasks.updateType', $task->id) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="type" value="Bug">
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                                        <svg class="w-6 h-6 text-danger dark:text-white me-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 24 24">
+                                                            <path d="..."/>
+                                                        </svg>
+                                                        Bug
+                                                    </button>
+                                                </form>
+                                            </li>
 
-                                        
+                                            <li>
+                                                <form method="POST" action="{{ route('tasks.updateType', $task->id) }}">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="type" value="Feature">
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                                        <svg class="w-6 h-6 text-success dark:text-white me-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 24 24">
+                                                            <path d="..."/>
+                                                        </svg>
+                                                        Feature
+                                                    </button>
+                                                </form>
+                                            </li>
+
+                                            <li>
+                                                                                                <form method="POST" action="{{ route('tasks.updateType', $task->id) }}">
+
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="type" value="Task">
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                                        <svg class="w-6 h-6 text-primary dark:text-white me-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 24 24">
+                                                            <path d="..."/>
+                                                        </svg>
+                                                        Task
+                                                    </button>
+                                                </form>
+                                            </li>
+
+                                            <li>
+                                                                                                <form method="POST" action="{{ route('tasks.updateType', $task->id) }}">
+
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="type" value="Story">
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                                        <svg class="w-6 h-6 text-success dark:text-white me-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 24 24">
+                                                            <path d="..."/>
+                                                        </svg>
+                                                        Story
+                                                    </button>
+                                                </form>
+                                            </li>
+
+                                            <li>
+                                                                                                <form method="POST" action="{{ route('tasks.updateType', $task->id) }}">
+
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <input type="hidden" name="type" value="Request">
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center">
+                                                        <svg class="w-6 h-6 text-success dark:text-white me-2" xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="24" height="24" viewBox="0 0 24 24">
+                                                            <path d="..."/>
+                                                        </svg>
+                                                        Request
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+
                                     </div>
+
 
                                     <div class="col-auto fw-semibold" id="task-display-{{ $task->id }}" style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                         SCRUM-{{ $task->id }} - {{ $task->name }}
