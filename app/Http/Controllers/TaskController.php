@@ -15,7 +15,7 @@ class TaskController extends Controller
             'sprint_id' => 'required|exists:sprints,id',
             'status' => 'required',
             'user_id' => 'nullable|exists:users,id',
-            'type' => 'required|in:Bug,Feature,Task,Sory,Request',
+            'type' => 'required|in:Bug,Feature,Task,Story,Request',
         ]);
 
         Task::create($request->all());
