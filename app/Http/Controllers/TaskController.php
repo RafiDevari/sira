@@ -16,6 +16,9 @@ class TaskController extends Controller
             'status' => 'required',
             'user_id' => 'nullable|exists:users,id',
             'type' => 'required|in:Bug,Feature,Task,Story,Request',
+            'description' => 'required|string|max:1000',
+            'waktu_mulai' => 'required|date',
+            'waktu_selesai' => 'required|date|after_or_equal:waktu_mulai',
         ]);
 
         Task::create($request->all());
@@ -71,7 +74,7 @@ class TaskController extends Controller
         $task->type = $request->type;
         $task->save();
 
-        return back(); // or use redirect()->route(...) if needed
+        return back(); 
     }
 
 

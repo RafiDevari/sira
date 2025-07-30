@@ -29,6 +29,7 @@ class ProjectController extends Controller
         $sort = $request->input('sort');
         // $allTypes = Project::select('tipe')->distinct()->pluck('tipe');
 
+        // Sort projects based on the sort parameter
         if ($sort) {
             [$key, $direction] = explode(':', $sort);
             $direction = in_array($direction, ['asc', 'desc']) ? $direction : 'asc';
@@ -110,12 +111,16 @@ class ProjectController extends Controller
 
     public function show($id, Request $request)
     {
-        $project = Project::with(['sprints.tasks.user'])->findOrFail($id);
+        $project = Project::with([
+            'sprints.tasks.user',
+            'sprints.tasks.attachments.user'
+        ])->findOrFail($id);
+
         $users = User::all();
 
         $search = $request->input('search');
         $type = $request->input('type');
-
+            
         $project->sprints->each(function ($sprint) use ($search, $type) {
             $sprint->tasks = $sprint->tasks->filter(function ($task) use ($search, $type) {
                 $matchesSearch = $search ? (
@@ -131,5 +136,6 @@ class ProjectController extends Controller
 
         return view('projects.show', compact('project', 'users'));
     }
+
 
 }

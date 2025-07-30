@@ -17,7 +17,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProjectSeeder::class,
             SprintSeeder::class,
-            TaskSeeder::class
+            TaskSeeder::class,
+            AttachmentSeeder::class
         ]);
     }
 }

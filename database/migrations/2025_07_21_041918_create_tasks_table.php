@@ -18,6 +18,9 @@ class CreateTasksTable extends Migration
             $table->foreign('sprint_id')->references('id')->on('sprints')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->string('type');
+            $table->string('description')->nullable();
+            $table->date('waktu_mulai');
+            $table->date('waktu_selesai');
         });
     }
 

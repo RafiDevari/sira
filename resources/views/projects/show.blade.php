@@ -8,12 +8,12 @@
     }
 
     .dots-btn:hover {
-        border: 1px solid #d0d0d0; /* border on hover like the image */
-        background-color: #f8f9fa;
+        border: 1px solid #d0d0d0; /* Light gray border */
+        background-color: #f8f9fa; /* Light gray background */
     }
 
     .dropdown-item:hover {
-        background-color: #f1f1f1; /* Button hover effect */
+        background-color: #f1f1f1; /* Light gray background on hover */
     }
 
     .modal-header {
@@ -37,12 +37,12 @@
     }
 
     .btn-primary {
-        background-color: #007bff;
+        background-color: #007bff; /* Bootstrap's primary color */
         border: none;
     }
 
     .btn-primary:hover {
-        background-color: #0069d9;
+        background-color: #0069d9; /* Darker blue on hover */
     }
 
     .card-toggle {
@@ -51,7 +51,7 @@
     }
 
     .card-toggle.expanded {
-        max-height: 490px; /*   Adjust as needed */
+        max-height: 490px; 
     }
 
 
@@ -68,7 +68,7 @@
     }
 
     .arrow-icon:hover path {
-        stroke: #1d4ed8; /* e.g. Tailwind's blue-700 */
+        stroke: #1d4ed8; /* Tailwind's blue-700 */
     }
 
     .hover-card {
@@ -88,7 +88,7 @@
 
     .editbtn:hover {
         border: 1px solid #6c757d; /* Bootstrap's "text-secondary" color */
-        background-color: rgba(108, 117, 125, 0.05); /* subtle background on hover (optional) */
+        background-color: rgba(108, 117, 125, 0.05);
         cursor: pointer;
     }
 
@@ -97,8 +97,6 @@
             display: none !important; /* Hide on smaller screens */
         }
     }
-
-  
 
     .task-name {
         max-width: 400px;
@@ -122,11 +120,26 @@
         }
     }
 
+    .hover-underline:hover {
+        text-decoration: underline;
+        
+    }
+
+    .offcanvas.task-detail {
+        --bs-offcanvas-width: 500px; 
+    }
+
+    .tooltip.show {
+        
+    }
+
 </style>
 
 <div class="container">
+
+    <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
-        <!-- Left side: Project Name & Timeline -->
+        <!-- Project Name & Timeline -->
         <div>
             <h2 class="mb-1">{{ $project->nama }}</h2>
             <div class="text-muted small d-flex align-items-center">
@@ -140,10 +153,12 @@
         </div>
     </div>
 
+    <!-- Project Description -->
     <div>
         <p class="text-muted">{{ $project->deskripsi }}</p>
     </div>
 
+    <!-- Search & Add Section -->
     <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between gap-3 mb-4">
         <!-- Search & Filter Form -->
         <form method="GET" class="d-flex flex-column flex-md-row gap-2 flex-grow-1 w-100 align-items-stretch">
@@ -162,7 +177,7 @@
                     style="font-size: 0.875rem; line-height: 1.5;" />
             </div>
 
-            <!-- Dropdown + Button Row -->
+            <!-- Filter + Search -->
             <div class="d-flex flex-row gap-2 flex-wrap w-100 w-md-auto align-items-stretch">
 
                 <!-- Filter dropdown -->
@@ -201,7 +216,7 @@
     </div>
 
 
-
+    <!-- Sprints Section -->
     @if ($project->sprints->isEmpty())
         <p class="text-muted">No sprints available yet. Please add one.</p>
     @else
@@ -218,7 +233,7 @@
                             </svg>
                         </div>
 
-                        <!-- Sprint Info + Toggle Button -->
+                        <!-- Sprint Info-->
                         <div class="flex-grow-1 d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
                             <div>
                                 <strong class="d-block">{{ $sprint->nama }}</strong>
@@ -245,6 +260,8 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Toggle Sprint Status -->
                         <form method="POST" action="{{ url('/sprints/' . $sprint->id . '/toggle-status') }}" class="mt-2 mt-md-0 ms-md-4">
                             @csrf
                             @method('PUT')
@@ -309,7 +326,7 @@
                         </div>
                     </div>
 
-                    
+                    <!-- Sprint Tasks -->
                     <div class="card-body p-0 shadow-sm card-toggle collapsed ">
                         <ul class="list-group list-group-flush">
                             @if($sprint->tasks->isEmpty())
@@ -317,10 +334,10 @@
                             @else
                                 @foreach($sprint->tasks as $task)
                                     <li class="list-group-item hover-card p-2">
-
+                                        <!-- Task -->
                                         <div class="d-flex flex-wrap flex-md-nowrap justify-content-between align-items-center w-100 " style="gap: 1rem;">
                                             <div class="row flex-nowrap align-items-center gx-2" >
-                                                <!-- Display Task Title -->
+                                                <!-- Task Type Dropdown -->
                                                 <div class="col-auto dropdown flex-shrink-0">
                                                     <button class="btn btn-light dropdown-toggle d-flex align-items-center" type="button" id="taskTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                                         @if ($task->type === 'Bug')
@@ -423,9 +440,32 @@
                                                 </div>
 
 
-                                                    <div class="col-auto fw-semibold text-truncate task-name" id="task-display-{{ $task->id }}" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                <!-- Task Name -->
+                                                @php
+                                                    $isOverdue = \Carbon\Carbon::parse($task->waktu_selesai)->lessThanOrEqualTo(now()) &&
+                                                                in_array($task->status, ['TO DO', 'IN PROGRESS']);
+                                                @endphp
+
+                                                <div class="col-auto fw-semibold text-truncate {{ $isOverdue ? 'text-danger' : '' }}" 
+                                                    id="task-display-{{ $task->id }}" 
+                                                    style="max-width: 600px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;" 
+                                                    data-bs-toggle="offcanvas" 
+                                                    data-bs-target="#taskDetail-{{ $task->id }}" 
+                                                    aria-controls="taskDetail-{{ $task->id }}">
+
+                                                    <span class="hover-underline"
+                                                        @if($isOverdue)
+                                                            data-bs-toggle="tooltip" 
+                                                            data-bs-placement="top"
+                                                            data-bs-custom-class="tooltip-danger"
+                                                            title="Overdue"
+                                                        @endif
+                                                    >
                                                         T{{ $loop->iteration }} - {{ $task->name }}
-                                                    </div>
+                                                    </span>
+                                                </div>
+
+
 
 
                                                 <!-- Edit Button (SVG Icon) -->
@@ -492,11 +532,10 @@
 
 
                                                 </div>
-                                                <!-- User Assign -->
                                                 <form method="POST" action="{{ url('/tasks/' . $task->id . '/update-user') }}">
                                                     @csrf
                                                     @method('PUT')
-                                                    
+                                                    <!-- User Assign -->
                                                     <div class="dropdown custom-dropdown flex-shrink-0">
                                                         <button
                                                             class="btn btn-light btn-sm dropdown-toggle w-100 text-start d-flex align-items-center"
@@ -524,7 +563,7 @@
                                                     </div>
                                                 </form>
 
-
+                                                <!-- Actions Dropdown -->
                                                 <div class="dropdown flex-shrink-0">
                                                     <button class="btn btn-sm dots-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                         <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" width="24"
@@ -535,8 +574,9 @@
                                                     </button>
                                                     <ul class="dropdown-menu shadow-sm">
                                                         <li>
-                                                            <button 
-                                                                type="button" 
+                                                            <!-- Delete Task -->
+                                                            <button
+                                                                type="button"
                                                                 class="dropdown-item d-flex align-items-center"
                                                                 onclick="confirmDelete(this)" data-id="{{ $task->id }}" data-name="{{ $task->name }}" data-type="task"
                                                             >
@@ -547,7 +587,6 @@
                                                                 <span>Delete</span>
                                                             </button>
 
-                                                            <!-- Hidden form to be submitted by JS -->
                                                             <form id="delete-form-task-{{ $task->id }}" action="{{ url('/tasks/' . $task->id . '/delete') }}" method="POST" style="display: none;">
                                                                 @csrf
                                                             </form>
@@ -561,6 +600,137 @@
                                         </div>
 
                                     </li>
+
+                                    <!-- Task Detail Offcanvas -->
+                                    <div class="offcanvas offcanvas-end" tabindex="-1" id="taskDetail-{{ $task->id }}" aria-labelledby="taskDetailLabel-{{ $task->id }}" style="--bs-offcanvas-width: 500px;">
+                                        <div class="offcanvas-header border-bottom">
+                                            <h5 class="offcanvas-title fw-semibold" id="taskDetailLabel-{{ $task->id }}">{{ $task->name }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                        </div>
+
+                                        <div class="offcanvas-body d-flex flex-column">
+                                            {{-- Description Section --}}
+                                            <div class="mb-4">
+                                                <div class="card border-0 shadow-sm bg-light">
+                                                    <div class="card-body">
+                                                        <h6 class="text-uppercase text-secondary fw-bold mb-2">
+                                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path fill-rule="evenodd" d="M8 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1h2a2 2 0 0 1 2 2v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2Zm6 1h-4v2H9a1 1 0 0 0 0 2h6a1 1 0 1 0 0-2h-1V4Z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            Description
+                                                        </h6>
+                                                        <p class="mb-0 text-dark fst-italic">
+                                                            {{ $task->description ?? 'No description available.' }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Task Details Section --}}
+                                            <div class="mb-4">
+                                                <div class="card border-0 shadow-sm">
+                                                    <div class="card-body">
+                                                        <h6 class="text-uppercase text-secondary fw-bold mb-3">
+                                                            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm9.408-5.5a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2h-.01ZM10 10a1 1 0 1 0 0 2h1v3h-1a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2h-1v-4a1 1 0 0 0-1-1h-2Z" clip-rule="evenodd"/>
+                                                            </svg>
+                                                            Task Details
+                                                        </h6>
+                                                        <div class="row gy-2">
+                                                            <div class="col-12 col-md-6">
+                                                                <div><strong>Assigned to:</strong> {{ $task->user->name ?? 'Unassigned' }}</div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6">
+                                                                <div><strong>Type:</strong> {{ $task->type }}</div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6">
+                                                                <div><strong>Status:</strong> {{ $task->status }}</div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6">
+                                                                <div><strong>Start Date:</strong> {{ \Carbon\Carbon::parse($task->start_date)->format('d M Y') }}</div>
+                                                            </div>
+                                                            <div class="col-12 col-md-6">
+                                                                <div><strong>Due Date:</strong> {{ \Carbon\Carbon::parse($task->due_date)->format('d M Y') }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            {{-- Comments Section --}}
+                                            <div class="flex-grow-1 d-flex flex-column justify-content-between">
+                                                <div>
+                                                    <h6 class="text-uppercase text-secondary fw-bold mb-3">
+                                                        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path fill-rule="evenodd" d="M3.559 4.544c.355-.35.834-.544 1.33-.544H19.11c.496 0 .975.194 1.33.544.356.35.559.829.559 1.331v9.25c0 .502-.203.981-.559 1.331-.355.35-.834.544-1.33.544H15.5l-2.7 3.6a1 1 0 0 1-1.6 0L8.5 17H4.889c-.496 0-.975-.194-1.33-.544A1.868 1.868 0 0 1 3 15.125v-9.25c0-.502.203-.981.559-1.331ZM7.556 7.5a1 1 0 1 0 0 2h8a1 1 0 0 0 0-2h-8Zm0 3.5a1 1 0 1 0 0 2H12a1 1 0 1 0 0-2H7.556Z" clip-rule="evenodd"/>
+                                                        </svg>
+                                                        Comments
+                                                    </h6>
+
+                                                    @forelse ($task->attachments as $attachment)
+                                                        <div class="mb-3 p-3 bg-light rounded shadow-sm">
+                                                            {{-- Top Row: Icon and Name --}}
+                                                            <div class="d-flex align-items-center mb-2">
+                                                                {{-- Icon --}}
+                                                                <div class="me-2">
+                                                                    <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                                                                        <path fill-rule="evenodd" d="M12 20a7.966 7.966 0 0 1-5.002-1.756l.002.001v-.683c0-1.794 1.492-3.25 3.333-3.25h3.334c1.84 0 3.333 1.456 3.333 3.25v.683A7.966 7.966 0 0 1 12 20ZM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10c0 5.5-4.44 9.963-9.932 10h-.138C6.438 21.962 2 17.5 2 12Zm10-5c-1.84 0-3.333 1.455-3.333 3.25S10.159 13.5 12 13.5c1.84 0 3.333-1.455 3.333-3.25S13.841 7 12 7Z" clip-rule="evenodd"/>
+                                                                    </svg>
+                                                                </div>
+
+                                                                {{-- Username and Time --}}
+                                                                <div class="d-flex justify-content-between w-100">
+                                                                    <span class="fw-semibold">{{ $attachment->user->name }}</span>
+                                                                    <small class="text-muted">{{ $attachment->created_at->diffForHumans() }}</small>
+                                                                </div>
+                                                            </div>
+
+                                                            {{-- Chat Bubble --}}
+                                                            @php
+                                                                if (!function_exists('linkify')) {
+                                                                    function linkify($text) {
+                                                                        $pattern = '/(https?:\/\/[^\s]+)/';
+                                                                        return preg_replace_callback($pattern, function ($matches) {
+                                                                            $url = htmlspecialchars($matches[0], ENT_QUOTES, 'UTF-8');
+                                                                            return "<a href=\"{$url}\" target=\"_blank\" rel=\"noopener noreferrer\">{$url}</a>";
+                                                                        }, nl2br(e($text)));
+                                                                    }
+                                                                }
+                                                            @endphp
+
+
+                                                        <div class="bg-white border rounded p-3">
+                                                            <p class="mb-0 text-dark">{!! linkify($attachment->comment) !!}</p>
+                                                        </div>
+
+
+                                                        </div>
+                                                    @empty
+                                                        <p class="text-muted fst-italic">No comments yet.</p>
+                                                    @endforelse
+
+                                                </div>
+
+                                                {{-- Add New Comment Form --}}
+                                                    <form action="{{ route('tasks.attachments.store', $task->id) }}" method="POST" class="mt-3">
+                                                        @csrf
+                                                        <div class="mb-2">
+                                                            <textarea name="comment" class="form-control" rows="2" placeholder="Add a comment..." required></textarea>
+                                                            <!-- Hidden Inputs for User ID (STATIC). Modify to use auth -->
+                                                            <input type="hidden" name="user_id" value="1">
+                                                        </div>
+                                                        <div class="d-grid d-md-flex justify-content-md-end">
+                                                            <button type="submit" class="btn btn-sm btn-primary">Post</button>
+                                                        </div>
+                                                    </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+
                                 @endforeach
                             @endif
                         </ul>
@@ -586,6 +756,9 @@
                             <input name="name" class="form-control mb-3" placeholder="Design Framework" required>
                             <input type="hidden" name="sprint_id" value="{{ $sprint->id }}">
 
+                            <label for="description" class="form-label">Description</label>
+                            <textarea name="description" class="form-control mb-3" placeholder="Describe the task here..." required></textarea>
+
                             <label for="user_id" class="form-label">User</label>
                             <select name="user_id" class="form-select mb-3">
                                 <option value="">Unassigned</option>
@@ -610,7 +783,15 @@
                                 <option value="Story">Story</option>
                                 <option value="Request">Request</option>
                             </select>
+
+                            <label for="waktu-mulai" class="form-label">Start Time</label>
+                            <input type="date" name="waktu_mulai" id="waktu_mulai_task" class="form-control mb-3" required>
+
+                            <label for="waktu-selesai" class="form-label">End Time</label>
+                            <input type="date" name="waktu_selesai" id="waktu_selesai_task" class="form-control mb-3" required>
                         </div>
+
+                        
 
                         <!-- Footer -->
                         <div class="modal-footer border-0">
@@ -622,6 +803,17 @@
                 </div>
             </div>
 
+            <script>
+                // Setup date constraints for task modal
+                document.addEventListener("DOMContentLoaded", function () {
+                    const modal2 = document.getElementById('addTaskModal-{{ $sprint->id }}');
+                    if (modal2) {
+                        modal2.addEventListener('shown.bs.modal', function () {
+                            setupDateConstraintsTask();
+                        });
+                    }
+                });
+            </script>
         @endforeach
     @endif
 </div>
@@ -660,7 +852,7 @@
     </div>
 </div>
 
-
+<!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg rounded-4 border-0 animate__animated animate__fadeInDown">
@@ -687,6 +879,12 @@
 
 @push('scripts')
 <script>
+
+    // Tooltip Initialization
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+        new bootstrap.Tooltip(el, { delay: { "show": 0, "hide": 100 } });
+    });
+    // Submit type filter form
     function setTypeFilter(type) {
         document.getElementById('typeInput').value = type;
         document.getElementById('typeLabel').innerText = type || 'Filter by type';
@@ -694,6 +892,7 @@
 
     }
     
+    // Handle form submission click
     document.addEventListener('DOMContentLoaded', function () {
         const allTaskBtns = document.querySelectorAll('[id^="addTaskButton-"]');
         allTaskBtns.forEach(taskBtn => {
@@ -714,24 +913,14 @@
         });
     });
 
+    // Handle delete button click
     const deleteBtn = document.getElementById('btnDelete');
     deleteBtn.addEventListener('click', function () {
         deleteBtn.disabled = true;
         deleteBtn.innerHTML = 'Deleting...';
     });
-
-    @isset($sprint)
-
-    const taskBtn = document.getElementById('addTaskButton-{{ $sprint->id }}');
-    const form = taskBtn.closest('form');
-    form.addEventListener('submit', function (e) {
-        taskBtn.disabled = true;
-        taskBtn.innerHTML = 'Saving...';
-    });
-
-    @endisset
     
-
+    // Handle edit sprint modal form
     document.addEventListener('DOMContentLoaded', function () {
         const modal = document.getElementById('addSprintModal');
         const title = document.getElementById('sprintModalTitle');
@@ -768,7 +957,7 @@
         });
     });
 
-
+    // Toggle card body visibility
     function toggleCard(header) {
         const icon = header.querySelector('.arrow-icon');
         const cardBody = header.closest('.card').querySelector('.card-body');
@@ -788,6 +977,7 @@
         icon?.classList.toggle('rotated', !isExpanded);
     }
 
+    // Initialize card toggle functionality
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.card-body.card-toggle').forEach(cardBody => {
             const shouldOpen = true; 
@@ -807,7 +997,7 @@
         });
     });
 
-
+    // Setup date constraints for sprint and task modals
     function setupDateConstraints() {
         const startInput = document.getElementById('waktu_mulai');
         const endInput = document.getElementById('waktu_selesai');
@@ -834,6 +1024,33 @@
         updateConstraints();
     }
 
+    function setupDateConstraintsTask() {
+        const startInputTask = document.getElementById('waktu_mulai_task');
+        const endInputTask = document.getElementById('waktu_selesai_task');
+
+        if (!startInputTask || !endInputTask) return;
+
+        function updateConstraintsTask() {
+            if (startInputTask.value) {
+                endInputTask.min = startInputTask.value;
+            } else {
+                endInputTask.removeAttribute('min');
+            }
+
+            if (endInputTask.value) {
+                startInputTask.max = endInputTask.value;
+            } else {
+                startInputTask.removeAttribute('max');
+            }
+        }
+
+        startInputTask.addEventListener('change', updateConstraintsTask);
+        endInputTask.addEventListener('change', updateConstraintsTask);
+
+        updateConstraintsTask();
+    }
+
+
     // Initialize date constraints on modal show
     document.addEventListener("DOMContentLoaded", function () {
         const modal = document.getElementById('addSprintModal');
@@ -844,9 +1061,7 @@
         }
     });
 
-    
-
-
+    // Delete confirmation
     let deleteTarget = {
         id: null,
         type: null
@@ -865,6 +1080,7 @@
         modal.show();
     }
 
+    // Submit delete form
     function submitDelete() {
         if (deleteTarget.id && deleteTarget.type) {
             const formId = `delete-form-${deleteTarget.type}-${deleteTarget.id}`;
@@ -873,6 +1089,7 @@
         }
     }
 
+    // Toggle edit task functionality
     function toggleEdit(taskId) {
         const display = document.getElementById(`task-display-${taskId}`);
         const form = document.getElementById(`edit-form-${taskId}`);
@@ -884,10 +1101,10 @@
         form.classList.add('d-flex')
         button.style.display = 'none';
 
-        // Focus input
         setTimeout(() => input.focus(), 100);
     }
 
+    // Cancel edit task
     function cancelEdit(taskId) {
         const display = document.getElementById(`task-display-${taskId}`);
         const form = document.getElementById(`edit-form-${taskId}`);

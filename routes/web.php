@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SprintController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\AttachmentController;
 
 Route::get('/projects/{id}', [ProjectController::class, 'show'])->name('projects.show');
 Route::post('/sprints', [SprintController::class, 'store'])->name('sprints.store');
@@ -19,9 +20,7 @@ Route::put('/sprints/{id}/toggle-status', [SprintController::class, 'toggleStatu
 Route::post('/sprints/{id}/delete', [SprintController::class, 'destroy'])->name('sprints.destroy');
 Route::post('/sprints/{id}/update', [SprintController::class, 'update'])->name('sprints.update');
 Route::put('/tasks/{id}/type', [TaskController::class, 'updateType'])->name('tasks.updateType');
-
-
-
+Route::post('/tasks/{task}/attachments', [AttachmentController::class, 'store'])->name('tasks.attachments.store');
 
 Route::get('/', function () {
     return view('welcome');

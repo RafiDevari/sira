@@ -13,8 +13,7 @@ class Sprint extends Model
     }
     public function tasks() {
     return $this->hasMany(Task::class, 'sprint_id');
-
-}
+    }
 
     protected $fillable = [
         'nama',

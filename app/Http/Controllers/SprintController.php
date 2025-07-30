@@ -37,16 +37,17 @@ class SprintController extends Controller
         return redirect()->route('projects.show', $request->id_project)->with('success', 'Sprint updated successfully.');
     }
 
+    // Toggle the status of a sprint
     public function toggleStatus(Request $request, $id)
     {
         $sprint = Sprint::findOrFail($id);
         $sprint->status = $request->status;
         $sprint->save();
 
-        return back(); // or redirect to another page if needed
+        return back();
     }
 
-
+    
     public function destroy($id)
     {
         $sprint = Sprint::findOrFail($id);
