@@ -172,7 +172,7 @@
                 </svg>
                 <input type="text" name="search"
                     value="{{ request('search') }}"
-                    placeholder="Search projects name or key..."
+                    placeholder="Search task by name..."
                     class="form-control border-0 shadow-none p-0"
                     style="font-size: 0.875rem; line-height: 1.5;" />
             </div>
@@ -535,7 +535,7 @@
                                                 <form method="POST" action="{{ url('/tasks/' . $task->id . '/update-user') }}">
                                                     @csrf
                                                     @method('PUT')
-                                                    <!-- User Assign -->
+                                                    <!-- User Assign-->
                                                     <div class="dropdown custom-dropdown flex-shrink-0">
                                                         <button
                                                             class="btn btn-light btn-sm dropdown-toggle w-100 text-start d-flex align-items-center"
